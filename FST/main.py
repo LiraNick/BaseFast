@@ -1,8 +1,10 @@
 from typing import Union
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 
 from pydantic import BaseModel
+
+from fastapi import status
 
 app = FastAPI()
 
@@ -12,29 +14,54 @@ class Item(BaseModel):
     is_offer: Union[bool, None] = None
 
 @app.get("/")
-async def read_root():
-    return {"Hello": "World"}
-
+async def raiz():
+    return {"Hello": "word"}
 
 alunos = {
-    1:"Lirinha",
-    2:"Lirinha",
-    3:"Lirinha",
-    4:"Lirinha"
+
+    1: {
+        "nome" : "Lirinha",
+        "idade" : 19,
+        "email" : "nick@gmail"
+        },
+    2: {
+        "nome" : "Jeffinho",
+        "idade" : 23,
+        "email" : "jeffbala@gmail"
+        },
+    3: {
+        "nome" : "Cleitinho",
+        "idade" : 32,
+        "email" : "cleitola@gmail"
+        },
+    4: {
+        "nome" : "Jasinto",
+        "idade" : 16,
+        "email" : "jaja@gmail"
+        }
+
 }
 
-@app.get('/aluno')
-async def get_aluno():
+
+@app.get('/alunos')
+async def get_alunos():
     return alunos
 
-@app.get("/items/{item_id}")
-async def read_item(item_id: int, q: Union[str, None] = None):
-    return {"item_id": item_id, "q": q}
+@app.get("/alunos/{alunos_id}")
+async def get_aluno(alunos_id: int):
+    aluno = alunos[alunos_id]
+    alunos.update({"id" : alunos_id})
+    try:
+        aluno = alunos[alunos_id]
+        alunos.update({'id':alunos_id})
+        return pessoa
+    except KeyError:
+        raise HTTPException(
+            status_code = status.HTTP_404_NOT_FOUND, detail = 'aluno não encontrado')
+    return aluno
 
 
-@app.put("/items/{item_id}")
-async def update_item(item_id: int, item: Item):
-    return {"item_name": item.name, "item_id": item_id}
+
 
 
 if __name__ == '__main__':
@@ -47,3 +74,4 @@ if __name__ == '__main__':
         log_level = "info",
         reload = True
     )
+
