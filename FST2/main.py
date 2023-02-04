@@ -1,6 +1,6 @@
 from fastapi import FastAPI 
 from fastapi import HTTPException, status
-from models import Aluno, alunos
+from criar_tabelas import Aluno, alunos
 from fastapi import Response
 from typing import Optional, Dict, List, Any
 from fastapi import Path, Query, Header, Depends

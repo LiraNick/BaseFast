@@ -1,4 +1,5 @@
 from fastapi import FastAPI 
+
 from fastapi import HTTPException, status
 from models import Aluno, alunos
 from fastapi import Response
@@ -30,7 +31,7 @@ async def raiz():
 description='lista de todos os alunos',
 summary='retorno substantivo',
 response_description="Lista de Alunos cadastrados"
-)
+ )
 async def get_alunos(): 
     return alunos
 @app.get('/alunos/{aluno_id}')
@@ -47,8 +48,9 @@ async def get_aluno(aluno_id: int = Path(default=None, title='ID Aluno', descrip
 @app.post('/alunos', status_code=status.HTTP_201_CREATED)
 async def post_aluno(aluno: Aluno):
     next_id : int = len(alunos) +1
-    alunos[next_id] = aluno
-    del aluno.id
+    alunos.id = next_id
+    alunos.append(aluno)
+    
     return aluno
 
 
