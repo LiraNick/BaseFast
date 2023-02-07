@@ -1,4 +1,4 @@
-from typing import Optional
+""" from typing import Optional
 from pydantic import BaseModel
 
 class Aluno(BaseModel):
@@ -10,7 +10,7 @@ class Aluno(BaseModel):
 alunos = [
     Aluno(id=1, nome="Andre", idade=25, email="andre@zuplae"),
     Aluno(id=2, nome="Vitor", idade=25, email="andre@zuplae")
-] 
+]  """
 
 from core.configs import settings
 from core.database import engine
