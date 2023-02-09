@@ -14,6 +14,10 @@ alunos = [
 
 from core.configs import settings
 from core.database import engine
+from models.aluno_models import AlunoModel
+from models.usuario_models import UsuarioModel
+from models.professor_models import ProfessorModel
+
 
 print ("executando documento criar_tabelas")
 

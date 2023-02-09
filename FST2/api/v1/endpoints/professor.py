@@ -1,6 +1,7 @@
 from typing import List
 
-from fastapi import APIRouter 
+
+from fastapi import APIRouter
 from fastapi import status
 from fastapi import Depends
 from fastapi import HTTPException
@@ -13,13 +14,24 @@ from models.aluno_models import AlunoModel
 from schemas.aluno_schema import AlunoSchema
 from core.deps import get_session
 
+
 router = APIRouter()
 
+#Listando Alunos
+@router.get('/', response_model=List[AlunoSchema])
+async def get_alunos(db: AsyncSession = Depends(get_session)):
+    async with db as session:
+        query = select(AlunoModel)
+        result = await session.execute(query)
+        alunos : List[AlunoModel] = result.scalars().all()
+
+        return alunos  
 
 
-#GET Aluno
-@router.get('/{aluno_id}', response_model=AlunoSchema, status_code = status.HTTP_200_OK)
-async def get_aluno(aluno_id: int, db: AsyncSession = Depends(get_session)):
+
+#Listando Aluno
+@router.get('/{aluno_id}', response_model=AlunoSchema, status_code=status.HTTP_200_OK)
+async def get_aluno( aluno_id:int, db : AsyncSession = Depends(get_session)):
     async with db as session:
         query = select(AlunoModel).filter(AlunoModel.id == aluno_id)
         result = await session.execute(query)
@@ -28,37 +40,18 @@ async def get_aluno(aluno_id: int, db: AsyncSession = Depends(get_session)):
         if aluno:
             return aluno
         else:
-            raise HTTPException(detail='Aluno Nao Encontrado', status_code=status.HTTP_404_NOT_FOUND)
-
-
-#GET Alunos 
-@router.get('/', response_model=List[AlunoSchema])
-async def get_alunos(db: AsyncSession = Depends(get_session)):
+            HTTPException(detail='Aluno nao encontrado', status_code=status.HTTP_404_NOT_FOUND)
     
-    async with db as session:
-        query = select(AlunoModel)
-        result = await session.execute(query)
-        alunos : List[AlunoModel] = result.scalars().all()
-
-        return alunos
-
-
-
-# Post aluno
+#Criando Aluno
 @router.post('/', status_code=status.HTTP_201_CREATED, response_model=AlunoSchema)
-async def post_aluno(aluno: AlunoSchema, db: AsyncSession = Depends(get_session)):
-
-    novo_aluno = AlunoModel( nome = aluno.nome, email = aluno.email)
-
+async def post_aluno(aluno : AlunoSchema, db: AsyncSession = Depends(get_session)):
+    novo_aluno = AlunoModel( nome= aluno.nome, email = aluno.email)
     db.add(novo_aluno)
     await db.commit()
-
     return novo_aluno
 
-
-#PUT Aluno
 @router.put('/{aluno_id}', response_model=AlunoSchema, status_code= status.HTTP_202_ACCEPTED)
-async def put_aluno(aluno_id: int, aluno: AlunoSchema, db: AsyncSession = Depends(get_session)):
+async def put_aluno(aluno_id: int, aluno : AlunoSchema, db: AsyncSession = Depends(get_session)):
     async with db as session:
         query = select(AlunoModel).filter(AlunoModel.id == aluno_id)
         result = await session.execute(query)
@@ -70,12 +63,9 @@ async def put_aluno(aluno_id: int, aluno: AlunoSchema, db: AsyncSession = Depend
             await session.commit()
             return aluno_up
         else:
-            raise HTTPException(detail='Aluno Nao Encontrado', status_code=status.HTTP_404_NOT_FOUND)
-       
+            raise HTTPException(detail='Aluno nao encontrado', status_code=status.HTTP_404_NOT_FOUND)
 
-
-#DELETE Aluno
-@router.delete('/{aluno_id}', status_code=status.HTTP_204_NO_CONTENT)
+@router.delete('/{aluno_id}', status_code= status.HTTP_202_ACCEPTED)
 async def delete_aluno(aluno_id: int, db: AsyncSession = Depends(get_session)):
     async with db as session:
         query = select(AlunoModel).filter(AlunoModel.id == aluno_id)
@@ -87,4 +77,4 @@ async def delete_aluno(aluno_id: int, db: AsyncSession = Depends(get_session)):
             await session.commit()
             return Response(status_code=status.HTTP_204_NO_CONTENT)
         else:
-            raise HTTPException(detail='Aluno Nao Encontrado', status_code=status.HTTP_404_NOT_FOUND)
+            raise HTTPException(detail='Aluno nao encontrado', status_code=status.HTTP_404_NOT_FOUND)

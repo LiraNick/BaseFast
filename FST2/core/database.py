@@ -11,5 +11,5 @@ Session: AsyncSession = sessionmaker(
     autoflush=False,
     expire_on_commit=False,
     class_= AsyncSession,
-    blind=engine
+    bind=engine
 )
